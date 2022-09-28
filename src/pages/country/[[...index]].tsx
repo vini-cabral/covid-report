@@ -5,8 +5,12 @@ import { useEffect, useState } from "react"
 import { apiClientCountries, apiClientByCountryAllStatus } from "../../client/apiServiceClient"
 import ICountry from "../../interface/countries"
 import { ICountry as ICountryStatus } from "../../interface/byCountryAllStatus"
-import Link from "next/link"
+import SearchPart from "../../partials/SearchPart"
 
+// Standard values
+export const allStatusURLParamsStdSlug = process.env.NEXT_PUBLIC_SLUG || 'brazil'
+export const allStatusURLParamsStdFrom = moment().add(-1*(+process.env.NEXT_PUBLIC_DAYS_AGO! || 2), 'days').format().substring(0, 10)
+export const allStatusURLParamsStdTo = moment().format().substring(0, 10)
 // Handling - URL Parameters Validate
 function handleURLParamsValidate(countryList?:ICountry[],router?:NextRouter): boolean {
   const totalParams = 3
@@ -76,7 +80,14 @@ function handleApiClientByCountryAllStatus(
   })
   .catch(e => setErrorCountry(e))
 }
+// Handling - By Country All Status URL Parmas Cache
+function handleAllStatusURLParamsSetCache(slug:string, from:string, to:string):void {
+  localStorage.setItem("allStatusURLParamsSlug", slug)
+  localStorage.setItem("allStatusURLParamsFrom", from)
+  localStorage.setItem("allStatusURLParamsTo", to)
+}
 
+let render: JSX.Element | JSX.Element[]
 export default function Country() {
   // Country List
   const [countryList, setCountryList] = useState<ICountry[]>()
@@ -96,7 +107,10 @@ export default function Country() {
   useEffect(() => {
     // URL Params
     if(countryList && router.query.index) {
+      setByCountryAllStatus(undefined)
+      localStorage.removeItem("byCountryAllStatus")
       if(handleURLParamsValidate(countryList, router)) {
+        handleAllStatusURLParamsSetCache(router.query.index[0], router.query.index[1], router.query.index[2])
         handleApiClientByCountryAllStatus(
           router.query.index[0],
           router.query.index[1],
@@ -106,14 +120,8 @@ export default function Country() {
           setErrorCountry
         )
       } else {
-        handleApiClientByCountryAllStatus(
-          process.env.NEXT_PUBLIC_SLUG || 'brazil',
-          moment().add(-1*(+process.env.NEXT_PUBLIC_DAYS_AGO! || 2), 'days').format().substring(0, 10),
-          moment().format().substring(0, 10),
-          +process.env.NEXT_PUBLIC_CACHE_MINUTES! || 5,
-          setByCountryAllStatus,
-          setErrorCountry
-        )
+        handleAllStatusURLParamsSetCache(allStatusURLParamsStdSlug, allStatusURLParamsStdFrom, allStatusURLParamsStdTo)
+        router.push('/country')
       }
     }
     // No URL Params
@@ -139,36 +147,18 @@ export default function Country() {
     }
   }, [countryList, router, router.query.index])
 
-  if(errorCountry) {
-    console.log(errorCountry.message)
+  // Handling Renderings
+  render = <h3>Carregando...</h3>
+
+  if(errorCountryList || errorCountry) {
+    handleAllStatusURLParamsSetCache(allStatusURLParamsStdSlug, allStatusURLParamsStdFrom, allStatusURLParamsStdTo)
+    render = <h3>Não foi possível carregar os dados</h3>
   }
 
-  if(byCountryAllStatus && !errorCountry) {
+  if(countryList && byCountryAllStatus && !errorCountryList && !errorCountry) {
+    render = <SearchPart countries={ countryList } />
     console.log(byCountryAllStatus)
   }
 
-  const [inputSlug, setInputSlug] = useState('')
-  const [inputFrom, setInputFrom] = useState('')
-  const [inputTo, setInputTo] = useState('')
-
-  if(inputSlug && inputFrom && inputTo) {
-    console.log(inputSlug, inputFrom, inputTo)
-  }
-
-  return <div>
-    <label>País
-      <select value={ inputSlug } onChange={ evt => setInputSlug(evt.currentTarget.value) }>
-        { countryList?.map(el => <option key={ el.Slug } value={ el.Slug }>{ el.Country }</option>) }
-      </select>
-    </label>
-    <label>Data início
-      <input type="date" value={ inputFrom } onChange={ evt => setInputFrom(evt.currentTarget.value) }/>
-    </label>
-    <label>Data fim
-      <input type="date" value={ inputTo } onChange={ evt => setInputTo(evt.currentTarget.value) }/>
-    </label>
-    <Link href={`/country/${inputSlug}/${inputFrom}/${inputTo}`}>
-      <a>Buscar</a>
-    </Link>
-  </div>
+  return <>{ render }</>
 }
