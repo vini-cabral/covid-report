@@ -57,7 +57,7 @@
     a
       margin-top:  calc(-1.7*var.$font-size-std)
 
-@include mix.bkpt-menu-mobile
+@include mix.bkpt-desktop
   .navbar
     .btn-menu
       display: none
@@ -65,6 +65,10 @@
       width: auto
       a
         margin: 0
-        margin-left: calc(5*var.$gutter)
-        padding: 0 var.$offset
+        margin-left: var.$gutter
         display: inline
+        font-weight: 500
+      a:hover
+        background-color: var.$color-01
+        color: var.$color-03
+        border-bottom: .2rem solid var.$color-03
