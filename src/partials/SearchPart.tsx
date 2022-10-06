@@ -1,54 +1,45 @@
 import moment from "moment"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useContext, useState } from "react"
 // My Project
-import ICountry from "../interface/countries"
-import { allStatusURLParamsStdFrom, allStatusURLParamsStdSlug, allStatusURLParamsStdTo } from "../pages/country/[[...index]]"
-
-type Props = {
-  countries: ICountry[]
-}
+import { PUB_DATE_MIN, PUB_FROM, PUB_TO } from "../client/env"
+import dataContext from "../context"
 
 let render: JSX.Element | JSX.Element[]
-export default function SearchPart({ countries }:Props) {
-  const [slug, setSlug] = useState("")
-  const [from, setFrom] = useState("")
-  const [to, setTo] = useState("")
-
-  useEffect(() => {
-    setSlug(localStorage.getItem("allStatusURLParamsSlug")! || allStatusURLParamsStdSlug)
-    setFrom(localStorage.getItem("allStatusURLParamsFrom")! || allStatusURLParamsStdFrom)
-    setTo(localStorage.getItem("allStatusURLParamsTo")! || allStatusURLParamsStdTo)
-  }, [])
+export default function SearchPart() {
+  const { countryList, URLParamSlug, URLParamFrom, URLParamTo, URLParamChartDesc } = useContext(dataContext)
+  const [inputSlug, setInputSlug] = useState(URLParamSlug)
+  const [inputFrom, setInputFrom] = useState(URLParamFrom)
+  const [inputTo, setInputTo] = useState(URLParamTo)
 
   render = <h3>Carregando...</h3>
 
-  if(slug && from && to) {
+  if(countryList) {
     render = <form>
       <label>País:
-        <select value={slug} onChange={evt => setSlug(evt.currentTarget.value)}>
-          {countries.map(el => <option key={el.Slug} value={el.Slug}>{el.Country}</option>)}
+        <select value={inputSlug} onChange={evt => setInputSlug(evt.currentTarget.value)}>
+          {countryList.map(el => <option key={el.Slug} value={el.Slug}>{el.Country}</option>)}
         </select>
       </label>
       <label>Início
         <input
           type="date"
-          value={from}
-          onChange={evt => setFrom(evt.currentTarget.value)}
-          min={process.env.NEXT_PUBLIC_DATE_MIN}
-          max={moment(to).add(-1, 'days').format().substring(0, 10)}
+          value={inputFrom}
+          onChange={evt => setInputFrom(evt.currentTarget.value)}
+          min={PUB_DATE_MIN}
+          max={moment(PUB_TO).add(-1, 'days').format().substring(0, 10)}
         />
       </label>
       <label>Fim
         <input
           type="date"
-          value={to}
-          onChange={evt => setTo(evt.currentTarget.value)}
-          min={moment(from).add(1, 'days').format().substring(0, 10)}
-          max={allStatusURLParamsStdTo}
+          value={inputTo}
+          onChange={evt => setInputTo(evt.currentTarget.value)}
+          min={moment(PUB_FROM).add(1, 'days').format().substring(0, 10)}
+          max={PUB_TO}
         />
       </label>
-      <Link href={`/country/${slug}/${from}/${to}`}>
+      <Link href={`/country/${URLParamChartDesc}?slug=${inputSlug}&from=${inputFrom}&to=${inputTo}`}>
           <a>Buscar</a>
       </Link>
     </form>

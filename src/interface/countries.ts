@@ -1,4 +1,4 @@
-export default interface ICountry {
+export interface ICountry {
   Country: string,
   Slug: string,
   ISO2: string

@@ -11,7 +11,7 @@ export default function Layout({ children }: Props) {
       <Link href="/">
         <a>Home</a>
       </Link>{" | "}
-      <Link href="/country">
+      <Link href="/country/deaths">
         <a>Country</a>
       </Link>
     </nav>
