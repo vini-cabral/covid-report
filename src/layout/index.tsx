@@ -1,4 +1,6 @@
+import styles from "./styles.module.sass"
 import NavbarPart from "../partials/NavbarPart"
+import FooterPart from "../partials/FooterPart"
 
 type Props = {
   children?: JSX.Element | JSX.Element[]
@@ -7,9 +9,7 @@ type Props = {
 export default function Layout({ children }: Props) {
   return <>
     <NavbarPart />
-    <main>{ children }</main>
-    <footer>
-      <h3>Footer</h3>
-    </footer>
+    <main className={ styles['main'] }>{ children }</main>
+    <FooterPart />
   </>
 }
