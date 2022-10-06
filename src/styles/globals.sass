@@ -1,3 +1,4 @@
+@use './settings/_variableVariables'
 @use './settings/_reset'
 @use './settings/_variables' as var
 
@@ -7,6 +8,7 @@ html
 
 body, h1, h2, h3, h4, h5, h6, a, p, cite, button, input, textarea
   font-size: var.$font-size-std
+  font-weight: 400
   line-height: calc(var.$line-height-factor * var.$font-size-std)
   color: var.$color-01
 

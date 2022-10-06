@@ -1,5 +1,21 @@
 @use './_variables' as var
 
-@mixin bkpt-menu-mobile
-  @media(min-width: var.$bkpt-menu-mobile)
+@mixin bkpt-desktop
+  @media(min-width: var.$bkpt-desktop)
+    @content
+
+@mixin bkpt-sm
+  @media(min-width: var.$bkpt-sm)
+    @content
+
+@mixin bkpt-md
+  @media(min-width: var.$bkpt-md)
+    @content
+
+@mixin bkpt-lg
+  @media(min-width: var.$bkpt-lg)
+    @content
+
+@mixin bkpt-xlg
+  @media(min-width: var.$bkpt-xlg)
     @content

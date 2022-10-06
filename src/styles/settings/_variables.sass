@@ -1,21 +1,36 @@
-$gutter: .4rem
-$offset: calc(0.5*$gutter)
+// Breakpoint
+$bkpt-desktop: 960px
+$bkpt-sm: 270px
+$bkpt-md: 675px
+$bkpt-lg: 1200px
+$bkpt-xlg: 1800px
+
 // Typography
-$font-size-std: 1.75rem
+$font-size-std: var(--font-size-std)
 $line-height-factor: 1.25
-$font-size-h1: 3.5rem
-$font-size-h2: 3rem
-$font-size-h3: 2.75rem
-$font-size-h4: 2.5rem
+$font-size-h1: calc(2*$font-size-std)
+$font-size-h2: calc(1.75*$font-size-std)
+$font-size-h3: calc(1.5*$font-size-std)
+$font-size-h4: calc(1.25*$font-size-std)
 $font-size-h5: $font-size-std
 $font-size-h6: $font-size-std
+
 // Colors
 $color-01: #303030
 $color-02: #F5F5F5
 $color-03: #c088cf
 $color-04: #592068
 $color-05: #024600
+
 // Navbar
-$navbar-height: 6rem
-// Breakpoint
-$bkpt-menu-mobile: 960px
+$navbar-height: var(--navbar-height)
+
+// Footer
+$footer-height: var(--footer-height)
+
+// Main
+$main-min-height: calc(100vh - $footer-height)
+
+// General
+$gutter: var(--gutter)
+$offset: calc(0.5*$gutter)
