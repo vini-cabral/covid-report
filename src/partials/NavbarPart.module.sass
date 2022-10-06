@@ -1,0 +1,70 @@
+@use '../styles/settings/_variables' as var
+@use '../styles/settings/_mixins' as mix
+
+.navbar
+  position: fixed
+  width: 100%
+  top: 0
+  left: 0
+  min-height: var.$navbar-height
+  background-color: var.$color-01
+  display: flex
+  align-items: center
+  justify-content: space-between
+  border-bottom: .2rem solid var.$color-03
+  color: var.$color-03
+  flex-wrap: wrap
+  padding: 0 var.$gutter
+  box-sizing: border-box
+  *
+    color: var.$color-03
+  .logo
+    align-self: flex-start
+    display: flex
+    align-items: center
+    font-size: 25px
+    font-weight: bold
+    letter-spacing: 1px
+    height: var.$navbar-height
+    cursor: pointer
+    .char-hide
+      display: none
+    .icon
+      margin-top: 5px
+      margin-right: -1px
+      transform: scale(0.96)
+  .btn-menu
+    display: flex
+    align-items: center
+    justify-content: center
+    height: var.$navbar-height
+    width: 25px
+    font-size: 25px
+    cursor: pointer
+  .menu-mobile--open,.menu-mobile--close
+    width: 100%
+    overflow: hidden
+    a
+      display: flex
+      text-decoration: none
+      line-height: calc(1.5*var.$font-size-std)
+      margin-top: 0px
+      transition: background-color .25s, color .25s
+    a:hover
+      background-color: var.$color-03
+      color: var.$color-01
+  .menu-mobile--close
+    a
+      margin-top:  calc(-1.7*var.$font-size-std)
+
+@include mix.bkpt-menu-mobile
+  .navbar
+    .btn-menu
+      display: none
+    .menu-mobile--open,.menu-mobile--close
+      width: auto
+      a
+        margin: 0
+        margin-left: calc(5*var.$gutter)
+        padding: 0 var.$offset
+        display: inline

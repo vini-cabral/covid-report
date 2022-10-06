@@ -1,4 +1,4 @@
-import Link from "next/link"
+import NavbarPart from "../partials/NavbarPart"
 
 type Props = {
   children?: JSX.Element | JSX.Element[]
@@ -6,15 +6,7 @@ type Props = {
 
 export default function Layout({ children }: Props) {
   return <>
-    <nav>
-      <h1>Navbar</h1>
-      <Link href="/">
-        <a>Home</a>
-      </Link>{" | "}
-      <Link href="/country/deaths">
-        <a>Country</a>
-      </Link>
-    </nav>
+    <NavbarPart />
     <main>{ children }</main>
     <footer>
       <h3>Footer</h3>
