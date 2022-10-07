@@ -37,9 +37,16 @@ function handlerApiClientByCountryAllStatus(
   })
   .catch(e => setErrorCountryStatus(e))
 }
-// Handler - URL Chart Desc
-function handlerURLchartDescValidate(chartDescList:string[], URLchartDesc:string): null | string {
-  if(chartDescList.find(el => el === URLchartDesc)) {
+// Handler - URL Chart Desc Validate
+function handlerURLchartDescValidate(
+  chartDescList:string[],
+  URLchartDesc:string | string[] | undefined
+): null | string {
+  if(!URLchartDesc) {
+    return null
+  }
+  URLchartDesc = typeof URLchartDesc === 'string' ? URLchartDesc : URLchartDesc[0]
+  if(URLchartDesc && chartDescList.find(el => el === URLchartDesc)) {
     return URLchartDesc
   }
   return null
@@ -88,16 +95,15 @@ export default function Country() {
   const [errorCountryList, setErrorCountryList] = useState<Error | null>(null)
   useEffect(() => {
     handlerApiClientCountries(countryList, setCountryList, setErrorCountryList)
-  }, [countryList, setCountryList])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countryList])
 
   // Handler - By Country All Status
   const [errorCountryStatus, setErrorCountryStatus] = useState<Error | null>(null)
-
   useEffect(() => {
-    if(router.query) {
-      URLchartDesc = handlerURLchartDescValidate(chartDescList,
-        typeof router.query.chartDesc === 'string' ? router.query.chartDesc : ''
-      )
+    if(countryList && router) {
+      URLchartDesc = handlerURLchartDescValidate(chartDescList, router.query.chartDesc)
+      URLParams = handlerURLParamsValidate(countryList, router)
       URLParamsTotal = Object.keys(router.query).length
 
       if(URLParamsTotal === 1) {
@@ -114,16 +120,6 @@ export default function Country() {
           router.push(`/country/${PUB_CHART_DESC}`)
         }
       }
-    }
-  }, [URLParamFrom, URLParamSlug, URLParamTo, byCountryAllStatus, router, setByCountryAllStatus, setURLParamChartDesc, setURLParamFrom, setURLParamSlug, setURLParamTo])
-
-  useEffect(() => {
-    if(countryList && router) {
-      URLchartDesc = handlerURLchartDescValidate(chartDescList,
-        typeof router.query.chartDesc === 'string' ? router.query.chartDesc : ''
-      )
-      URLParams = handlerURLParamsValidate(countryList, router)
-      URLParamsTotal = Object.keys(router.query).length
 
       if(URLParamsTotal > 1) {
         if(URLchartDesc && URLParams) {
@@ -152,7 +148,8 @@ export default function Country() {
         }
       }
     }
-  }, [URLParamChartDesc, URLParamFrom, URLParamSlug, URLParamTo, countryList, router, setByCountryAllStatus, setURLParamChartDesc, setURLParamFrom, setURLParamSlug, setURLParamTo])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countryList, router])
 
   render = <h3>Carregando...</h3>
   
