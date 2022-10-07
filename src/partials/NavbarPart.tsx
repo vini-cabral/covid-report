@@ -7,10 +7,14 @@ import { CgCloseO } from "react-icons/cg"
 import { PUB_CHART_DESC } from "../client/env"
 import styles from './NavbarPart.module.sass'
 
-export default function NavbarPart() {
+let descStyle = ''
+export default function NavbarPart({ classAdd }:{ classAdd?: string }) {
+  descStyle = styles['navbar']
+  if(classAdd) { 
+    descStyle += ` ${classAdd}`
+  }
   const [open, setOpen] = useState(false)
-
-  return <nav className={ styles['navbar'] }>
+  return <nav className={ descStyle }>
     <Link href="/">
       <h1 className={ styles['logo'] } onClick={ ()=>setOpen(false) }>
         C<span className={ styles['char-hide'] }>O</span>
