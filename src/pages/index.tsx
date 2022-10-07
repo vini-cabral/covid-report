@@ -1,4 +1,6 @@
 import { useContext, useEffect, useState } from "react"
+import moment from "moment"
+import "moment/locale/pt-br"
 // My Project
 import { apiServiceGetSummary } from "../client/service/apiService"
 import { ICountry as ICountries } from "../interface/summary"
@@ -8,8 +10,6 @@ import Loading from "../components/Loading"
 import styles from "../styles/HomePage.module.sass"
 import ErrorDialog from "../components/ErrorDialog"
 import Top10ChartBarsPart from "../partials/Top10ChartBarsPart"
-import moment from "moment"
-import "moment/locale/pt-br"
 import WarningDialog from "../components/WarningDialog"
 
 // General Numbers
@@ -25,7 +25,7 @@ const PrintNumbers = ({
   labels: string[]
 }) => {
   if(typeof deaths === 'number' && typeof confirmed === 'number' && typeof recovered === 'number') {
-    return <div>
+    return <div className={ styles['print-label'] }>
       <h4 >{ labels[0] }: <strong>{ deaths.toLocaleString() }</strong></h4>
       <h4 >{ labels[1] }: <strong>{ confirmed.toLocaleString() }</strong></h4>
       <h4 >{ labels[2] }: <strong>{ recovered.toLocaleString() }</strong></h4>
@@ -95,28 +95,30 @@ export default function GlobalSummary() {
     render = <section className={ styles['section'] }>
       <h1>Resumo Global</h1>
       <h5>Atualizado { moment(global.Date).locale('pt-br').calendar() }</h5>
-      <Card classAdd="shadow" cornerRad>
-        <h3>Números Totais</h3>
-        <PrintNumbers
-          deaths={ global.TotalDeaths }
-          confirmed={ global.TotalConfirmed }
-          recovered={ global.TotalRecovered }
-          labels={['Mortos', 'Confirmados', 'Recuperados']}
-        />
-      </Card>
-      <Card classAdd="shadow" cornerRad>
-        <h3>Números Parciais</h3>
-        <PrintNumbers
-          deaths={ global.NewDeaths }
-          confirmed={ global.NewConfirmed }
-          recovered={ global.NewRecovered }
-          labels={['Mortos', 'Confirmados', 'Recuperados']}
-        />
-      </Card>
-      <Card classAdd="shadow overflow-x" cornerRad>
-        <h3>Top 10 Mortos</h3>
-        <Top10ChartBarsPart top10Countries={ top10Countries } />
-      </Card>
+      <div className={ styles['panel'] }>
+        <Card classAdd={`shadow ${styles['item-01']}`} cornerRad>
+          <h3>Números Totais</h3>
+          <PrintNumbers
+            deaths={ global.TotalDeaths }
+            confirmed={ global.TotalConfirmed }
+            recovered={ global.TotalRecovered }
+            labels={['Mortos', 'Confirmados', 'Recuperados']}
+          />
+        </Card>
+        <Card classAdd={`shadow ${styles['item-02']}`} cornerRad>
+          <h3>Números Parciais</h3>
+          <PrintNumbers
+            deaths={ global.NewDeaths }
+            confirmed={ global.NewConfirmed }
+            recovered={ global.NewRecovered }
+            labels={['Mortos', 'Confirmados', 'Recuperados']}
+          />
+        </Card>
+        <Card classAdd={`shadow overflow-x ${styles['item-03']}`} cornerRad>
+          <h3>Top 10 Mortos</h3>
+          <Top10ChartBarsPart top10Countries={ top10Countries } />
+        </Card>
+      </div>
     </section>
   }
 

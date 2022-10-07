@@ -41,7 +41,7 @@ export const data = {
   labels: [''],
   datasets: [
     {
-      label: 'Dataset 1',
+      label: 'Top 10 Mortos',
       data: [0],
       backgroundColor: '#592068',
     }
