@@ -8,7 +8,7 @@ type Props = {
 
 export default function Layout({ children }: Props) {
   return <>
-    <NavbarPart />
+    <NavbarPart classAdd="shadow"/>
     <main className={ styles['main'] }>{ children }</main>
     <FooterPart />
   </>
