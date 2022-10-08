@@ -6,7 +6,7 @@ export default function WarningDialog({
 } : {
   children?: JSX.Element | JSX.Element[]
 }) {
-  return <Card classAdd={ styles['warning-dialog'] } cornerRad>{
+  return <Card classAdd={ `${styles['warning-dialog']} shadow` } cornerRad>{
     children
   }</Card>
 }

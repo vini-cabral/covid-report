@@ -6,7 +6,7 @@ export default function ErrorDialog({
 } : {
   children?: JSX.Element | JSX.Element[]
 }) {
-  return <Card classAdd={ styles['error-dialog'] } cornerRad>{
+  return <Card classAdd={ `${styles['error-dialog']} shadow` } cornerRad>{
     children
   }</Card>
 }
