@@ -3,7 +3,7 @@ import moment from "moment"
 import "moment/locale/pt-br"
 // My Project
 import { apiServiceGetSummary } from "../client/service/apiService"
-import { ICountry as ICountries } from "../interface/summary"
+import { ICountry as ICountries, IGlobal } from "../interface/summary"
 import dataContext from "../context"
 import Card from "../components/Card"
 import Loading from "../components/Loading"
@@ -13,7 +13,7 @@ import Top10ChartBarsPart from "../partials/Top10ChartBarsPart"
 import WarningDialog from "../components/WarningDialog"
 
 // General Numbers
-const PrintNumbers = ({
+export const PrintNumbers = ({
   deaths,
   confirmed,
   recovered,
@@ -38,31 +38,42 @@ const PrintNumbers = ({
   }
 }
 
+// Handler Summary Data
+export function handlerGetSummary(
+  global: IGlobal | null,
+  countries: ICountries[] | null,
+  setGlobal: Function,
+  setCountries: Function,
+  setErrorDataFetching: Function,
+  setErrorInconsistentData: Function
+):void {
+  if(global === null && countries === null) {
+    apiServiceGetSummary()
+    .then(res => {
+      try {
+        if(res.Message === '') {
+          setGlobal({...res.Global})
+          setCountries([...res.Countries])
+        } else {
+          throw new Error(res.Message)
+        }
+      } catch (error) {
+        if(error instanceof Error) setErrorInconsistentData(error)
+      }
+    })
+    .catch(e => setErrorDataFetching(e))
+  }
+}
+
 // Main
 let render: JSX.Element | JSX.Element[] = <Loading />
 export default function GlobalSummary() {
-  const {global, setGlobal, top10Countries, setTop10Countries} = useContext(dataContext)
-  const [countries, setCountries] = useState<ICountries[] | null>(null)
+  const {global, setGlobal, countries, setCountries, top10Countries, setTop10Countries} = useContext(dataContext)
   const [errorDataFetching, setErrorDataFetching] = useState<Error | null>(null)
   const [errorInconsistentData, setErrorInconsistentData] = useState<Error | null>(null)
 
   useEffect(() => {
-    if(global === null && top10Countries === null) {
-      apiServiceGetSummary()
-      .then(res => {
-        try {
-          if(res.Message === '') {
-            setGlobal({...res.Global})
-            setCountries([...res.Countries])
-          } else {
-            throw new Error(res.Message)
-          }
-        } catch (error) {
-          if(error instanceof Error) setErrorInconsistentData(error)
-        }
-      })
-      .catch(e => setErrorDataFetching(e))
-    }
+    handlerGetSummary(global, countries, setGlobal, setCountries, setErrorDataFetching, setErrorInconsistentData)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -94,7 +105,7 @@ export default function GlobalSummary() {
   if(!errorDataFetching && !errorInconsistentData && global && top10Countries) {
     render = <section className={ styles['section'] }>
       <h1>Resumo Global</h1>
-      <h5>Atualizado { moment(global.Date).locale('pt-br').calendar() }</h5>
+      <h5 className="sub-title-h5">Atualizado { moment(global.Date).locale('pt-br').calendar() }</h5>
       <div className={ styles['panel'] }>
         <Card classAdd={`shadow ${styles['item-01']}`} cornerRad>
           <h3>Números Totais</h3>
