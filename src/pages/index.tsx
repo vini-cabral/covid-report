@@ -38,47 +38,36 @@ export const PrintNumbers = ({
   }
 }
 
-// Handler Summary Data
-export function handlerGetSummary(
-  global: IGlobal | null,
-  countries: ICountries[] | null,
-  setGlobal: Function,
-  setCountries: Function,
-  setErrorDataFetching: Function,
-  setErrorInconsistentData: Function
-):void {
-  if(global === null && countries === null) {
-    apiServiceGetSummary()
-    .then(res => {
-      try {
-        if(res.Message === '') {
-          setGlobal({...res.Global})
-          setCountries([...res.Countries])
-        } else {
-          throw new Error(res.Message)
-        }
-      } catch (error) {
-        if(error instanceof Error) setErrorInconsistentData(error)
-      }
-    })
-    .catch(e => setErrorDataFetching(e))
-  }
-}
-
 // Main
 let render: JSX.Element | JSX.Element[] = <Loading />
 export default function GlobalSummary() {
-  const {global, setGlobal, countries, setCountries, top10Countries, setTop10Countries} = useContext(dataContext)
+  const {global, setGlobal, top10Countries, setTop10Countries} = useContext(dataContext)
   const [errorDataFetching, setErrorDataFetching] = useState<Error | null>(null)
   const [errorInconsistentData, setErrorInconsistentData] = useState<Error | null>(null)
+  const [countries, setCountries] = useState<ICountries[] | null>(null)
 
   useEffect(() => {
-    handlerGetSummary(global, countries, setGlobal, setCountries, setErrorDataFetching, setErrorInconsistentData)
+    if(global === null && countries === null) {
+      apiServiceGetSummary()
+      .then(res => {
+        try {
+          if(res.Message === '') {
+            setGlobal({...res.Global})
+            setCountries([...res.Countries])
+          } else {
+            throw new Error(res.Message)
+          }
+        } catch (error) {
+          if(error instanceof Error) setErrorInconsistentData(error)
+        }
+      })
+      .catch(e => setErrorDataFetching(e))
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    if(countries && top10Countries === null) {
+    if(countries) {
       setTop10Countries([
         ...countries
         .sort((a: ICountries, b: ICountries) => b.TotalDeaths - a.TotalDeaths)

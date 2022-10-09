@@ -11,7 +11,6 @@ import { PUB_CHART_DESC, PUB_FROM, PUB_SLUG, PUB_TO } from '../client/env'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [global, setGlobal] = useState<IGlobal | null>(null)
-  const [countries, setCountries] = useState<ICountries[] | null>(null)
   const [top10Countries, setTop10Countries] = useState<ICountries[] | null>(null)
   const [countryList, setCountryList] = useState<ICountryList[] | null>(null)
   const [byCountryAllStatus, setByCountryAllStatus] = useState<ICountryStatus[] | null>(null)
@@ -23,7 +22,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   return <Layout>
     <dataContext.Provider value={{
       global, setGlobal,
-      countries, setCountries,
       top10Countries, setTop10Countries,
       countryList, setCountryList,
       byCountryAllStatus, setByCountryAllStatus,

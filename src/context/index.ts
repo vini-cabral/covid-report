@@ -8,8 +8,6 @@ export interface IDataContext {
   // Summary
   global: IGlobal | null
   setGlobal: Function
-  countries: ICountries[] | null
-  setCountries: Function
   top10Countries: ICountries[] | null
   setTop10Countries: Function
   // Countries
@@ -30,8 +28,6 @@ export interface IDataContext {
 const dataContext = React.createContext<IDataContext>({
   global: null,
   setGlobal: () => {},
-  countries: null,
-  setCountries: () => {},
   top10Countries: null,
   setTop10Countries: () => {},
   countryList: null,
