@@ -1,7 +1,11 @@
+import moment from "moment"
 import Link from "next/link"
 import { useContext, useState } from "react"
+import { FaSearch } from "react-icons/fa"
 // My Project
+import { PUB_DATE_MIN, PUB_TO } from "../client/env"
 import dataContext from "../context"
+import styles from "./SearchPart.module.sass"
 
 let render: JSX.Element | JSX.Element[]
 export default function SearchPart() {
@@ -13,28 +17,34 @@ export default function SearchPart() {
   render = <h3>Carregando...</h3>
 
   if(ctxCountryList) {
-    render = <form>
-      <label>País:
+    render = <form className={ styles['form'] }>
+      <label className={ styles['field'] }>País:
         <select value={inputSlug} onChange={evt => setInputSlug(evt.currentTarget.value)}>
           {ctxCountryList.map(el => <option key={el.Slug} value={el.Slug}>{el.Country}</option>)}
         </select>
       </label>
-      <label>Início
+      <label className={ styles['field'] }>Início
         <input
           type="date"
           value={inputFrom}
           onChange={evt => setInputFrom(evt.currentTarget.value)}
+          min={PUB_DATE_MIN}
+          max={moment(inputTo).add(-1, 'days').format().substring(0, 10)}
         />
       </label>
-      <label>Fim
+      <label className={ styles['field'] }>Fim
         <input
           type="date"
           value={inputTo}
           onChange={evt => setInputTo(evt.currentTarget.value)}
+          min={moment(inputFrom).add(1, 'days').format().substring(0, 10)}
+          max={PUB_TO}
         />
       </label>
       <Link href={`/country/${inputSlug}/${inputFrom}/${inputTo}/${ctxURLParamChartDesc}`}>
-          <a>Buscar</a>
+          <a className={ styles['btn-search'] }>
+            <FaSearch /><span>BUSCAR</span>
+          </a>
       </Link>
     </form>
   }
