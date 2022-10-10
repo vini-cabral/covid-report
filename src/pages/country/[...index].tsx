@@ -154,6 +154,13 @@ export default function Country() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctxCountryList, router])
+  useEffect(() => {
+    setCtxURLParamSlug(PUB_SLUG)
+    setCtxURLParamFrom(PUB_FROM)
+    setCtxURLParamTo(PUB_TO)
+    setCtxURLParamChartDesc(PUB_CHART_DESC)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errorCountryStatus])
 
   // Render
   render = <Loading />
