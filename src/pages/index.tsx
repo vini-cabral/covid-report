@@ -3,7 +3,7 @@ import moment from "moment"
 import "moment/locale/pt-br"
 // My Project
 import { apiServiceGetSummary } from "../client/service/apiService"
-import { ICountry as ICountries, IGlobal } from "../interface/summary"
+import { ICountry as ICountries } from "../interface/summary"
 import dataContext from "../context"
 import Card from "../components/Card"
 import Loading from "../components/Loading"
@@ -41,18 +41,18 @@ export const PrintNumbers = ({
 // Main
 let render: JSX.Element | JSX.Element[] = <Loading />
 export default function GlobalSummary() {
-  const {global, setGlobal, top10Countries, setTop10Countries} = useContext(dataContext)
+  const {ctxGlobal, setCtxGlobal, ctxTop10Countries, setCtxTop10Countries} = useContext(dataContext)
   const [errorDataFetching, setErrorDataFetching] = useState<Error | null>(null)
   const [errorInconsistentData, setErrorInconsistentData] = useState<Error | null>(null)
   const [countries, setCountries] = useState<ICountries[] | null>(null)
 
   useEffect(() => {
-    if(global === null && countries === null) {
+    if(ctxGlobal === null && countries === null) {
       apiServiceGetSummary()
       .then(res => {
         try {
           if(res.Message === '') {
-            setGlobal({...res.Global})
+            setCtxGlobal({...res.Global})
             setCountries([...res.Countries])
           } else {
             throw new Error(res.Message)
@@ -68,7 +68,7 @@ export default function GlobalSummary() {
 
   useEffect(() => {
     if(countries) {
-      setTop10Countries([
+      setCtxTop10Countries([
         ...countries
         .sort((a: ICountries, b: ICountries) => b.TotalDeaths - a.TotalDeaths)
         .slice(0, 10)
@@ -91,32 +91,32 @@ export default function GlobalSummary() {
     </WarningDialog>
   }
 
-  if(!errorDataFetching && !errorInconsistentData && global && top10Countries) {
+  if(!errorDataFetching && !errorInconsistentData && ctxGlobal && ctxTop10Countries) {
     render = <section className={ styles['section'] }>
       <h1>Resumo Global</h1>
-      <h5 className="sub-title-h5">Atualizado { moment(global.Date).locale('pt-br').calendar() }</h5>
+      <h5 className="sub-title-h5">Atualizado { moment(ctxGlobal.Date).locale('pt-br').calendar() }</h5>
       <div className={ styles['panel'] }>
         <Card classAdd={`shadow ${styles['item-01']}`} cornerRad>
           <h3>Números Totais</h3>
           <PrintNumbers
-            deaths={ global.TotalDeaths }
-            confirmed={ global.TotalConfirmed }
-            recovered={ global.TotalRecovered }
+            deaths={ ctxGlobal.TotalDeaths }
+            confirmed={ ctxGlobal.TotalConfirmed }
+            recovered={ ctxGlobal.TotalRecovered }
             labels={['Mortos', 'Confirmados', 'Recuperados']}
           />
         </Card>
         <Card classAdd={`shadow ${styles['item-02']}`} cornerRad>
           <h3>Números Parciais</h3>
           <PrintNumbers
-            deaths={ global.NewDeaths }
-            confirmed={ global.NewConfirmed }
-            recovered={ global.NewRecovered }
+            deaths={ ctxGlobal.NewDeaths }
+            confirmed={ ctxGlobal.NewConfirmed }
+            recovered={ ctxGlobal.NewRecovered }
             labels={['Mortos', 'Confirmados', 'Recuperados']}
           />
         </Card>
         <Card classAdd={`shadow overflow-x ${styles['item-03']}`} cornerRad>
           <h3>Top 10 Mortos</h3>
-          <Top10ChartBarsPart top10Countries={ top10Countries } />
+          <Top10ChartBarsPart top10Countries={ ctxTop10Countries } />
         </Card>
       </div>
     </section>

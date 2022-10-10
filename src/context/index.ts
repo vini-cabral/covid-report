@@ -6,42 +6,44 @@ import { ICountry as ICountryStatus } from "../interface/byCountryAllStatus"
 
 export interface IDataContext {
   // Summary
-  global: IGlobal | null
-  setGlobal: Function
-  top10Countries: ICountries[] | null
-  setTop10Countries: Function
+  ctxGlobal: IGlobal | null
+  setCtxGlobal: Function
+  ctxTop10Countries: ICountries[] | null
+  setCtxTop10Countries: Function
   // Countries
-  countryList: ICountryList[] | null
-  setCountryList: Function
-  byCountryAllStatus: ICountryStatus[] | null
-  setByCountryAllStatus: Function
-  URLParamSlug: string
-  setURLParamSlug: Function
-  URLParamFrom: string
-  setURLParamFrom: Function
-  URLParamTo: string
-  setURLParamTo: Function
-  URLParamChartDesc: string
-  setURLParamChartDesc: Function
+  ctxCountryList: ICountryList[] | null
+  setCtxCountryList: Function
+  ctxByCountryAllStatus: ICountryStatus[] | null
+  setCtxByCountryAllStatus: Function
+  ctxURLParamSlug: string
+  setCtxURLParamSlug: Function
+  ctxURLParamFrom: string
+  setCtxURLParamFrom: Function
+  ctxURLParamTo: string
+  setCtxURLParamTo: Function
+  ctxURLParamChartDesc: string
+  setCtxURLParamChartDesc: Function
 }
 
 const dataContext = React.createContext<IDataContext>({
-  global: null,
-  setGlobal: () => {},
-  top10Countries: null,
-  setTop10Countries: () => {},
-  countryList: null,
-  setCountryList: () => {},
-  byCountryAllStatus: null,
-  setByCountryAllStatus: () => {},
-  URLParamSlug: '',
-  setURLParamSlug: () => {},
-  URLParamFrom: '',
-  setURLParamFrom: () => {},
-  URLParamTo: '',
-  setURLParamTo: () => {},
-  URLParamChartDesc: '',
-  setURLParamChartDesc: () => {},
+  // Summary
+  ctxGlobal: null,
+  setCtxGlobal: () => {},
+  ctxTop10Countries: null,
+  setCtxTop10Countries: () => {},
+  // Countries
+  ctxCountryList: null,
+  setCtxCountryList: () => {},
+  ctxByCountryAllStatus: null,
+  setCtxByCountryAllStatus: () => {},
+  ctxURLParamSlug: '',
+  setCtxURLParamSlug: () => {},
+  ctxURLParamFrom: '',
+  setCtxURLParamFrom: () => {},
+  ctxURLParamTo: '',
+  setCtxURLParamTo: () => {},
+  ctxURLParamChartDesc: '',
+  setCtxURLParamChartDesc: () => {},
 })
 
 export default dataContext

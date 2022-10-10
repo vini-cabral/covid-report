@@ -1,14 +1,15 @@
 import Link from "next/link"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { FaVirus } from "react-icons/fa"
 import { GiHamburgerMenu } from "react-icons/gi"
 import { CgCloseO } from "react-icons/cg"
 // My Project
-import { PUB_CHART_DESC } from "../client/env"
+import dataContext from "../context"
 import styles from './NavbarPart.module.sass'
 
 let descStyle = ''
 export default function NavbarPart({ classAdd }:{ classAdd?: string }) {
+  const { ctxURLParamSlug, ctxURLParamFrom, ctxURLParamTo, ctxURLParamChartDesc } = useContext(dataContext)
   descStyle = styles['navbar']
   if(classAdd) { 
     descStyle += ` ${classAdd}`
@@ -31,7 +32,7 @@ export default function NavbarPart({ classAdd }:{ classAdd?: string }) {
       <Link href="/">
         <a onClick={ ()=>setOpen(false) }>RESUMO GLOBAL</a>
       </Link>
-      <Link href={`/country/${PUB_CHART_DESC}`}>
+      <Link href={`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/${ctxURLParamChartDesc}`}>
         <a onClick={ ()=>setOpen(false) }>RESUMO PAÍS</a>
       </Link>
     </div>

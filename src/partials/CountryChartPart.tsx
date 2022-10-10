@@ -4,26 +4,30 @@ import { useContext } from "react"
 import dataContext from "../context"
 import groupByObjArray from "../utils/groupByObjArray"
 
-let objAux: any = []
-let printAllStatus: {
+type TResultAllStatus = {
   Country: string
   Date: string
   Deaths: number
   Confirmed: number
   Recovered: number
-}[] = []
+}
+
+let objAux: any = []
+let resultAllStatus: TResultAllStatus[] = []
 let arrayKeys: string[] = []
+let dataChart: number[] = []
+let avgChart: number[] = []
 
 export default function CountryChartPart() {
-  const { byCountryAllStatus, URLParamChartDesc, URLParamSlug, URLParamFrom, URLParamTo } = useContext(dataContext)
+  const { ctxByCountryAllStatus, ctxURLParamChartDesc, ctxURLParamSlug, ctxURLParamFrom, ctxURLParamTo } = useContext(dataContext)
 
-  if(byCountryAllStatus) {
-    printAllStatus = []
-    objAux = groupByObjArray(byCountryAllStatus, "Date")
+  if(ctxByCountryAllStatus && ctxURLParamChartDesc) {
+    resultAllStatus = []
+    objAux = groupByObjArray(ctxByCountryAllStatus, "Date")
     arrayKeys = Object.keys(objAux)
 
     for(let key of arrayKeys) {
-      printAllStatus.push({
+      resultAllStatus.push({
         Country: objAux[key][0].Country,
         Date: objAux[key][0].Date,
         Deaths: objAux[key].reduce((a:number, b:any) => a + b.Deaths, 0),
@@ -31,16 +35,23 @@ export default function CountryChartPart() {
         Recovered: objAux[key].reduce((a:number, b:any) => a + b.Recovered, 0),
       })
     }
-    console.log(printAllStatus)
-  }
-
-  if(byCountryAllStatus) {
-
+    dataChart = resultAllStatus.map((el: any) => el[ctxURLParamChartDesc[0].toUpperCase() + ctxURLParamChartDesc.substring(1)])
+    avgChart = [...dataChart]
+    avgChart.fill(dataChart.reduce((a, b) => a + b, 0) / dataChart.length)
   }
 
   return <div>
-    <Link href={`/country/recovered?slug=${URLParamSlug}&from=${URLParamFrom}&to=${URLParamTo}`}>
-      <a>teste</a>
+    <Link href={`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/deaths`}>
+      <a>Mortos</a>
+    </Link>
+    <Link href={`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/confirmed`}>
+      <a>Confirmados</a>
+    </Link>
+    <Link href={`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/recovered`}>
+      <a>Recuperados</a>
+    </Link>
+    <Link href={`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/errr`}>
+      <a>Error</a>
     </Link>
     <h3>Country Chart</h3>
   </div>
