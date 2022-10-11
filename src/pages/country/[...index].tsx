@@ -7,7 +7,7 @@ import { ICountry as ICountryList } from "../../interface/countries"
 import dataContext from "../../context"
 import { PUB_CHART_DESC, PUB_DATE_MIN, PUB_FROM, PUB_SLUG, PUB_TO } from "../../client/env"
 import SearchPart from "../../partials/SearchPart"
-import CountryChartPart from "../../partials/CountryChartPart"
+import CountryChartLinePart from "../../partials/CountryChartLinePart"
 import Loading from "../../components/Loading"
 import ErrorDialog from "../../components/ErrorDialog"
 import Card from "../../components/Card"
@@ -189,7 +189,7 @@ export default function Country() {
           labels={['Mortos', 'Confirmados', 'Recuperados']}
         />
       </Card>
-      <CountryChartPart />
+      <CountryChartLinePart />
     </section>
   }
 
