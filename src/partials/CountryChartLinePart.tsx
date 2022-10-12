@@ -2,32 +2,12 @@ import { useContext, useEffect, useState } from "react"
 import { Chart } from "react-google-charts"
 import moment from "moment"
 import { v4 as uuidv4 } from "uuid"
-import { NextRouter, useRouter } from "next/router"
+import { useRouter } from "next/router"
 // My Project
 import dataContext from "../context"
 import groupByObjArray from "../utils/groupByObjArray"
 import Loading from "../components/Loading"
 import ErrorDialog from "../components/ErrorDialog"
-
-export const options = {
-  animation: {
-    duration: 1000,
-    easing: "out",
-    startup: true,
-  },
-  vAxis: {
-    viewWindow: {
-      max: -10,
-      min: 100,
-    },
-  },
-  hAxis: {
-    viewWindow: {
-      max: 100,
-      min: -10,
-    },
-  }
-}
 
 type TResultAllStatus = {
   Country: string
@@ -109,7 +89,6 @@ export default function CountryChartPart({chartDescList}: {chartDescList: string
           width="100%"
           height="200px"
           data={dataChart}
-          options={options}
         />
       </div>
     } else {
