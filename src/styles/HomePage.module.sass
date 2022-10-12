@@ -9,12 +9,13 @@
     gap: var.$gutter
     .print-label
       display: grid
+      grid-template-columns: 1fr
       gap: var.$offset
       letter-spacing: .1rem
       margin: auto 0
       h4
-        font-size: calc(0.8*var.$font-size-std)
-        line-height: calc(0.9*var.$font-size-std)
+        font-size: var.$font-size-std
+        line-height: calc(1.2*var.$font-size-std)
         display: flex
         flex-direction: column
         padding: calc(.5*var.$offset)
@@ -26,14 +27,35 @@
       strong
         display: flex
         align-self: flex-end
-        font-size: calc(1.8*var.$font-size-std)
-        line-height: calc(2*var.$font-size-std)
-        color: var.$color-04
+        font-size: calc(1.4*var.$font-size-std)
+        line-height: calc(1.2*var.$font-size-std)
+        color: var.$color-05
+        letter-spacing: 0.05rem
+
+@include mix.bkpt-sm
+  .section
+    .panel
+      .print-label
+        grid-template-columns: 1fr 1fr 1fr
+        h4
+          font-size: calc(0.6*var.$font-size-std)
+          line-height: calc(0.7*var.$font-size-std)
+        strong
+          font-size: calc(0.8*var.$font-size-std)
+          line-height: calc(1*var.$font-size-std)
 
 @include mix.bkpt-md
   .section
     .panel
       grid-template-columns: 1fr 1fr
+      .print-label
+        grid-template-columns: 1fr
+        h4
+          font-size: calc(0.7*var.$font-size-std)
+          line-height: calc(0.7*var.$font-size-std)
+        strong
+          font-size: calc(1.2*var.$font-size-std)
+          line-height: calc(1.2*var.$font-size-std)
       .item-03
         grid-column: 1 / 3
 
@@ -41,30 +63,27 @@
   .section
     .panel
       grid-template-columns: 1fr 1fr 1fr 1fr
-      .item-01
-        grid-column: 1 / 3
-      .item-02
-        grid-column: 1 / 3
-      .item-03
-        grid-column: 3 / 8
-        grid-row: 3 / 1
       .print-label
-        grid-template-columns: 1fr 1fr 1fr
+        grid-template-columns: 1fr
         h4
           font-size: calc(0.7*var.$font-size-std)
-          line-height: calc(0.9*var.$font-size-std)
+          line-height: calc(0.8*var.$font-size-std)
         strong
-          margin-top: var.$offset
-          font-size: calc(1.4*var.$font-size-std)
-          line-height: calc(1.6*var.$font-size-std)
+          font-size: calc(1.1*var.$font-size-std)
+          line-height: calc(1.2*var.$font-size-std)
+      .item-01,.item-02
+        grid-column: 1 / 2
+      .item-03
+        grid-column: 2 / 10
+        grid-row: 3 / 1
 
 @include mix.bkpt-xlg
   .section
     .panel
       .print-label
         h4
-          font-size: calc(1*var.$font-size-std)
-          line-height: calc(1.25*var.$font-size-std)
+          font-size: calc(0.8*var.$font-size-std)
+          line-height: calc(0.9*var.$font-size-std)
         strong
-          font-size: calc(2*var.$font-size-std)
-          line-height: calc(2.25*var.$font-size-std)
+          font-size: calc(1.5*var.$font-size-std)
+          line-height: calc(1.6*var.$font-size-std)

@@ -14,7 +14,7 @@ import Card from "../../components/Card"
 import styles from "../../styles/CountryPage.module.sass"
 
 // General Numbers
-export const PrintNumbers = ({
+const PrintNumbers = ({
   deaths,
   confirmed,
   recovered,
@@ -40,7 +40,7 @@ export const PrintNumbers = ({
 }
 
 // Handler - Country List
-function handlerApiClientCountries(
+function handleApiClientCountries(
   countryList: ICountryList[] | null,
   setCountryList: Function,
   setErrorCountryList: Function
@@ -57,7 +57,7 @@ function handlerApiClientCountries(
 }
 
 // Handler - URL Parameters Validate
-function handlerURLParamsValidate(
+function handleURLParamsValidate(
   params: string | string[], countryList:ICountryList[], chartDescList: string[]
 ): null | string[] {
   params =  typeof params === 'string' ? [params] : params
@@ -89,7 +89,7 @@ function handlerURLParamsValidate(
 }
 
 // Handler - By Country All Status
-function handlerApiClientByCountryAllStatus(
+function handleApiClientByCountryAllStatus(
   slug: string, from: string, to: string,
   setByCountryAllStatus: Function,
   setErrorCountryStatus: Function
@@ -116,7 +116,7 @@ export default function Country() {
   // Country List
   const [errorCountryList, setErrorCountryList] = useState<Error | null>(null)
   useEffect(() => {
-    handlerApiClientCountries(ctxCountryList, setCtxCountryList, setErrorCountryList)
+    handleApiClientCountries(ctxCountryList, setCtxCountryList, setErrorCountryList)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctxCountryList])
 
@@ -124,21 +124,21 @@ export default function Country() {
   const [errorCountryStatus, setErrorCountryStatus] = useState<Error | null>(null)
   useEffect(() => {
     if(ctxCountryList && router.query.index) {
-      URLParams = handlerURLParamsValidate(router.query.index, ctxCountryList, chartDescList)
+      URLParams = handleURLParamsValidate(router.query.index, ctxCountryList, chartDescList)
       if(URLParams) {
         setCtxURLParamSlug(URLParams[0])
         setCtxURLParamFrom(URLParams[1])
         setCtxURLParamTo(URLParams[2])
         setCtxURLParamChartDesc(URLParams[3])
         if(ctxByCountryAllStatus === null) {
-          handlerApiClientByCountryAllStatus(
+          handleApiClientByCountryAllStatus(
             URLParams[0], URLParams[1], URLParams[2],
             setCtxByCountryAllStatus, setErrorCountryStatus
           )
         }
         if(URLParams[0] !== ctxURLParamSlug || URLParams[1] !== ctxURLParamFrom || URLParams[2] !== ctxURLParamTo) {
           setCtxByCountryAllStatus(null)
-          handlerApiClientByCountryAllStatus(
+          handleApiClientByCountryAllStatus(
             URLParams[0], URLParams[1], URLParams[2],
             setCtxByCountryAllStatus, setErrorCountryStatus
           )

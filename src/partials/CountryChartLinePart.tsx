@@ -89,6 +89,7 @@ export default function CountryChartPart({chartDescList}: {chartDescList: string
           width="100%"
           height="200px"
           data={dataChart}
+          loader={<Loading />}
         />
       </div>
     } else {

@@ -1,67 +1,45 @@
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js'
-import { Bar } from 'react-chartjs-2'
+import { Chart } from "react-google-charts"
 // My project
-import styles from "./Top10ChartBarsPart.module.sass"
+import styles from "./Top10BarChartPart.module.sass"
 import { ICountry as ITop10Countries } from "../interface/summary"
 import ErrorDialog from '../components/ErrorDialog'
 import Loading from '../components/Loading'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-)
+export let data:(string | number)[][] = [[]]
 
 export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-      display: false,
-    },
-    title: {
-      display: false,
-      text: 'Chart.js Bar Chart',
-    },
+  chartArea: { width: "50%" },
+  hAxis: {
+    title: "Número de Mortos",
+    minValue: 0,
   },
-}
-
-export const data = {
-  labels: [''],
-  datasets: [
-    {
-      label: 'Top 10 Mortos',
-      data: [0],
-      backgroundColor: '#592068',
-    }
-  ],
-}
+  vAxis: {
+    title: "Países",
+  },
+  colors: ['#592068']
+};
 
 let render: JSX.Element | JSX.Element[] = <Loading />
 let chartLabels: string[] = ['']
 let chartData: number[] = [0]
 
 export default function Top10ChartBarsPart({ top10Countries }:{ top10Countries:ITop10Countries[] } ) {
+  data = [["Países", "Top 10 mortos"]]
   chartLabels = ['']
   chartData = [0]
   if(top10Countries) {
     chartLabels = [...top10Countries.map(el => el.Country)]
     chartData = [...top10Countries.map(el => el.TotalDeaths)]
     if(chartLabels && chartData) {
-      data.labels = chartLabels
-      data.datasets[0].data = chartData
-      render = <Bar options={options} data={data}/>
+      chartLabels.forEach((el, i) => data.push([el, chartData[i]]))
+      render = <Chart
+        chartType="BarChart"
+        width="100%"
+        height="100%"
+        data={data}
+        options={options}
+        loader={<Loading />}
+      />
     } else {
       render = <ErrorDialog>
         <h4>Erro!</h4>

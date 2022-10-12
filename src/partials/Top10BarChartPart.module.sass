@@ -1,0 +1,19 @@
+@use '../styles/settings/_variables' as var
+@use '../styles/settings/_mixins' as mix
+
+.box-chart
+  position: relative
+  z-index: 1
+  min-width: 600px
+  width: 100%
+  height: 350px
+  display: flex
+  margin-top: var.$gutter
+
+@include mix.bkpt-md
+  .box-chart
+    height: 400px
+
+@include mix.bkpt-xlg
+  .box-chart
+    height: 540px

@@ -9,11 +9,11 @@ import Card from "../components/Card"
 import Loading from "../components/Loading"
 import styles from "../styles/HomePage.module.sass"
 import ErrorDialog from "../components/ErrorDialog"
-import Top10ChartBarsPart from "../partials/Top10ChartBarsPart"
+import Top10BarChartPart from "../partials/Top10BarChartPart"
 import WarningDialog from "../components/WarningDialog"
 
 // General Numbers
-export const PrintNumbers = ({
+const PrintNumbers = ({
   deaths,
   confirmed,
   recovered,
@@ -116,7 +116,7 @@ export default function GlobalSummary() {
         </Card>
         <Card classAdd={`shadow overflow-x ${styles['item-03']}`} cornerRad>
           <h3>Top 10 Mortos</h3>
-          <Top10ChartBarsPart top10Countries={ ctxTop10Countries } />
+          <Top10BarChartPart top10Countries={ ctxTop10Countries } />
         </Card>
       </div>
     </section>
