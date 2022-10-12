@@ -9,14 +9,24 @@ import groupByObjArray from "../utils/groupByObjArray"
 import Loading from "../components/Loading"
 import ErrorDialog from "../components/ErrorDialog"
 
-function handleFilter(
-  router: NextRouter,
-  ctxURLParamSlug: string,
-  ctxURLParamFrom: string,
-  ctxURLParamTo: string,
-  inputChartDesc: string
-) {
-  router.push(`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/${inputChartDesc}`)
+export const options = {
+  animation: {
+    duration: 1000,
+    easing: "out",
+    startup: true,
+  },
+  vAxis: {
+    viewWindow: {
+      max: -10,
+      min: 100,
+    },
+  },
+  hAxis: {
+    viewWindow: {
+      max: 100,
+      min: -10,
+    },
+  }
 }
 
 type TResultAllStatus = {
@@ -79,14 +89,16 @@ export default function CountryChartPart({chartDescList}: {chartDescList: string
 
   if(ctxByCountryAllStatus && ctxURLParamChartDesc && dataChart) {
     if(dataChart) {
-      auxRender = <div onClick={() => handleFilter(router, ctxURLParamSlug, ctxURLParamFrom, ctxURLParamTo, inputChartDesc)}>
-        {chartDescList.map((el, i) => <label key={uuidv4()}>
+      auxRender = <div>
+        {chartDescList.map(el => <label key={uuidv4()}>
             <input
               type="radio"
               name="chart"
               checked={el === inputChartDesc ? true : false}
-              onChange={() => {
-                setInputChartDesc(chartDescList[i])
+              value={el}
+              onChange={(evt) => {
+                setInputChartDesc(evt.currentTarget.value)
+                router.push(`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/${evt.currentTarget.value}`)
               }}
             />
             { infoChartDescList[el as keyof TInfoChartDescList] }
@@ -97,6 +109,7 @@ export default function CountryChartPart({chartDescList}: {chartDescList: string
           width="100%"
           height="200px"
           data={dataChart}
+          options={options}
         />
       </div>
     } else {
