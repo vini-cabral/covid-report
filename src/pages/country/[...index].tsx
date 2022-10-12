@@ -189,7 +189,7 @@ export default function Country() {
           labels={['Mortos', 'Confirmados', 'Recuperados']}
         />
       </Card>
-      <CountryChartLinePart />
+      <CountryChartLinePart chartDescList={ chartDescList } />
     </section>
   }
 

@@ -1,64 +1,23 @@
-import Link from "next/link"
 import { useContext, useEffect, useState } from "react"
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2'
+import { Chart } from "react-google-charts"
+import moment from "moment"
+import { v4 as uuidv4 } from "uuid"
+import { NextRouter, useRouter } from "next/router"
 // My Project
 import dataContext from "../context"
 import groupByObjArray from "../utils/groupByObjArray"
 import Loading from "../components/Loading"
-import ErrorDialog from "../components/ErrorDialog";
+import ErrorDialog from "../components/ErrorDialog"
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
-
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Line Chart',
-    },
-  },
+function handleFilter(
+  router: NextRouter,
+  ctxURLParamSlug: string,
+  ctxURLParamFrom: string,
+  ctxURLParamTo: string,
+  inputChartDesc: string
+) {
+  router.push(`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/${inputChartDesc}`)
 }
-
-const labels = [''];
-
-// const data = {
-//   labels,
-//   datasets: [
-//     {
-//       label: 'Dataset 1',
-//       data: [0],
-//       borderColor: 'rgb(255, 99, 132)',
-//       backgroundColor: 'rgba(255, 99, 132, 0.5)',
-//     },
-//     {
-//       label: 'Dataset 2',
-//       data: [0],
-//       borderColor: 'rgb(53, 162, 235)',
-//       backgroundColor: 'rgba(53, 162, 235, 0.5)',
-//     },
-//   ],
-// }
 
 type TResultAllStatus = {
   Country: string
@@ -67,82 +26,88 @@ type TResultAllStatus = {
   Confirmed: number
   Recovered: number
 }
+type TInfoChartDescList = {
+  deaths: string
+  confirmed: string
+  recovered: string
+}
+const infoChartDescList: TInfoChartDescList = {
+  deaths: "Mortos",
+  confirmed: "Confirmados",
+  recovered: "Recuperados",
+}
+let auxObj: any = []
+let auxResultAllStatus: TResultAllStatus[] = []
+let auxArrayKeys: string[] = []
+let auxDateList: string[] = []
+let auxChartData: number[] = []
+let auxChartAvg: number[] = []
 
-let objAux: any = []
-let resultAllStatus: TResultAllStatus[] = []
-let arrayKeys: string[] = []
-let render: JSX.Element | JSX.Element[] = <Loading />
+let auxRender: JSX.Element | JSX.Element[] = <Loading />
 
-export default function CountryChartPart() {
+export default function CountryChartPart({chartDescList}: {chartDescList: string[]}) {
   const { ctxByCountryAllStatus,ctxURLParamChartDesc,ctxURLParamSlug,ctxURLParamFrom,ctxURLParamTo } = useContext(dataContext)
-  const [data, setData] = useState({
-    labels,
-    datasets: [
-      {
-        label: 'Dataset 1',
-        data: [0],
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-      {
-        label: 'Dataset 2',
-        data: [0],
-        borderColor: 'rgb(53, 162, 235)',
-        backgroundColor: 'rgba(53, 162, 235, 0.5)',
-      },
-    ],
-  })
-  const [element, setElement] = useState<JSX.Element | null>(null)
+  const [ dataChart, setDataChart ] = useState<(string | number)[][]>()
+  const [ inputChartDesc, setInputChartDesc ] = useState(ctxURLParamChartDesc)
+  const router = useRouter()
 
   useEffect(() => {
-    if(ctxByCountryAllStatus && ctxURLParamChartDesc) {
-      resultAllStatus = []
-      objAux = groupByObjArray(ctxByCountryAllStatus, "Date")
-      arrayKeys = Object.keys(objAux)
-
-      for(let key of arrayKeys) {
-        resultAllStatus.push({
-          Country: objAux[key][0].Country,
-          Date: objAux[key][0].Date,
-          Deaths: objAux[key].reduce((a:number, b:any) => a + b.Deaths, 0),
-          Confirmed: objAux[key].reduce((a:number, b:any) => a + b.Confirmed, 0),
-          Recovered: objAux[key].reduce((a:number, b:any) => a + b.Recovered, 0),
-        })
-      }
-      const obj = data
-      let test = resultAllStatus.map((el: any) => el[ctxURLParamChartDesc[0].toUpperCase()+ctxURLParamChartDesc.substring(1)])
-      obj.labels = resultAllStatus.map(el => el.Date)
-      obj.datasets[0].data = [...test]
-      obj.datasets[1].data = [...test.fill(test.reduce((a, b) => a + b, 0) / test.length)]
-      setData({...obj})
+    auxResultAllStatus = []
+    auxObj = groupByObjArray(ctxByCountryAllStatus, "Date")
+    auxArrayKeys = Object.keys(auxObj)
+    for(let key of auxArrayKeys) {
+      auxResultAllStatus.push({
+        Country: auxObj[key][0].Country,
+        Date: auxObj[key][0].Date,
+        Deaths: auxObj[key].reduce((a:number, b:any) => a + b.Deaths, 0),
+        Confirmed: auxObj[key].reduce((a:number, b:any) => a + b.Confirmed, 0),
+        Recovered: auxObj[key].reduce((a:number, b:any) => a + b.Recovered, 0),
+      })
     }
+    auxDateList = auxResultAllStatus.map(el => moment(el.Date).format("DD/MM/YYYY"))
+    auxChartData = auxResultAllStatus.map(el => +el[
+      ctxURLParamChartDesc[0].toUpperCase()+ctxURLParamChartDesc.substring(1) as keyof TResultAllStatus
+    ])
+    auxChartAvg = [...auxChartData]
+    auxChartAvg.fill(auxChartData.reduce((a:number, b:number) => a + b, 0) / auxChartData.length)
+    setDataChart([
+      ['Data', infoChartDescList[ctxURLParamChartDesc as keyof TInfoChartDescList], 'Média'],
+      ...auxDateList.map((el, i) => [el, auxChartData[i], auxChartAvg[i]])
+    ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctxURLParamChartDesc])
 
-  if(ctxByCountryAllStatus && ctxURLParamChartDesc) {
-    if(data) {
-      render = <div>
-        <Link href={`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/deaths`}>
-          <a>Mortos</a>
-        </Link>
-        <Link href={`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/confirmed`}>
-          <a>Confirmados</a>
-        </Link>
-        <Link href={`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/recovered`}>
-          <a>Recuperados</a>
-        </Link>
-        <Link href={`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/errr`}>
-          <a>Error</a>
-        </Link>
-        <Line options={options} data={data} />
+  if(ctxByCountryAllStatus && ctxURLParamChartDesc && dataChart) {
+    if(dataChart) {
+      auxRender = <div onClick={() => handleFilter(router, ctxURLParamSlug, ctxURLParamFrom, ctxURLParamTo, inputChartDesc)}>
+        {chartDescList.map((el, i) => <label key={uuidv4()}>
+            <input
+              type="radio"
+              name="chart"
+              checked={el === inputChartDesc ? true : false}
+              onChange={() => {
+                setInputChartDesc(chartDescList[i])
+              }}
+            />
+            { infoChartDescList[el as keyof TInfoChartDescList] }
+          </label>
+        )}
+        <Chart
+          chartType="Line"
+          width="100%"
+          height="200px"
+          data={dataChart}
+        />
       </div>
     } else {
-      render = <ErrorDialog>
+      auxRender = <ErrorDialog>
         <h4>Erro!</h4>
         <p>Dados inconsistentes.</p>
       </ErrorDialog>
     }
   }
 
-  return render
+  return <>
+    { auxRender }
+  </>
 }

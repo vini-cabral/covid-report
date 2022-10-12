@@ -2,6 +2,7 @@ import moment from "moment"
 import Link from "next/link"
 import { useContext, useState } from "react"
 import { FaSearch } from "react-icons/fa"
+import { v4 as uuidv4 } from "uuid"
 // My Project
 import { PUB_DATE_MIN, PUB_TO } from "../client/env"
 import dataContext from "../context"
@@ -20,7 +21,7 @@ export default function SearchPart() {
     render = <form className={ styles['form'] }>
       <label className={ styles['field'] }>País:
         <select value={inputSlug} onChange={evt => setInputSlug(evt.currentTarget.value)}>
-          {ctxCountryList.map(el => <option key={el.Slug} value={el.Slug}>{el.Country}</option>)}
+          {ctxCountryList.map(el => <option key={uuidv4()} value={el.Slug}>{el.Country}</option>)}
         </select>
       </label>
       <label className={ styles['field'] }>Início
