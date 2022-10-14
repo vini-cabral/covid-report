@@ -109,12 +109,13 @@ export default function CountryChartPart({
         </div>
         <div>
           <Chart
-            chartType="Line"
+            chartType="LineChart"
             width="100%"
             height="100%"
             data={dataChart}
             options={{
               colors: ["#592068", "#A788AF"],
+              curveType: "function"
             }}
             loader={<Loading />}
           />
