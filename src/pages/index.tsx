@@ -52,6 +52,7 @@ export default function GlobalSummary() {
       .then(res => {
         try {
           if(res.Message === '') {
+            setErrorInconsistentData(null)
             setCtxGlobal({...res.Global})
             setCountries([...res.Countries])
           } else {
@@ -94,7 +95,7 @@ export default function GlobalSummary() {
   if(!errorDataFetching && !errorInconsistentData && ctxGlobal && ctxTop10Countries) {
     render = <section className={ styles['section'] }>
       <h1>Resumo Global</h1>
-      <h5 className="sub-title-h5">Atualizado { moment(ctxGlobal.Date).locale('pt-br').calendar() }</h5>
+      <h5 className="sub-title-h5">Atualizado { moment(ctxGlobal.Date).locale('pt-br').calendar().toLocaleLowerCase() }</h5>
       <div className={ styles['panel'] }>
         <Card classAdd={`shadow ${styles['item-01']}`} cornerRad>
           <h3>Números Totais</h3>

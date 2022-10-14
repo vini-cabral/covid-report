@@ -8,6 +8,7 @@ import dataContext from "../context"
 import groupByObjArray from "../utils/groupByObjArray"
 import Loading from "../components/Loading"
 import ErrorDialog from "../components/ErrorDialog"
+import styles from "./CountryChartLinePart.module.sass"
 
 type TResultAllStatus = {
   Country: string
@@ -30,12 +31,25 @@ let auxObj: any = []
 let auxResultAllStatus: TResultAllStatus[] = []
 let auxArrayKeys: string[] = []
 let auxDateList: string[] = []
-let auxChartData: number[] = []
-let auxChartAvg: number[] = []
+let auxChartDataDeaths: number[] = []
+let auxChartDataConfirmed: number[] = []
+let auxChartDataRecovered: number[] = []
+let auxChartDataPrint: number[] = []
+let auxChartDataPrintAvg: number[] = []
 
 let auxRender: JSX.Element | JSX.Element[] = <Loading />
 
-export default function CountryChartPart({chartDescList}: {chartDescList: string[]}) {
+export default function CountryChartPart({
+  chartDescList,
+  setPrintDeaths,
+  setPrintConfirmed,
+  setPrintRecovered,
+}: {
+  chartDescList: string[]
+  setPrintDeaths: Function
+  setPrintConfirmed: Function
+  setPrintRecovered: Function
+}) {
   const { ctxByCountryAllStatus,ctxURLParamChartDesc,ctxURLParamSlug,ctxURLParamFrom,ctxURLParamTo } = useContext(dataContext)
   const [ dataChart, setDataChart ] = useState<(string | number)[][]>()
   const [ inputChartDesc, setInputChartDesc ] = useState(ctxURLParamChartDesc)
@@ -55,42 +69,56 @@ export default function CountryChartPart({chartDescList}: {chartDescList: string
       })
     }
     auxDateList = auxResultAllStatus.map(el => moment(el.Date).format("DD/MM/YYYY"))
-    auxChartData = auxResultAllStatus.map(el => +el[
+    auxChartDataDeaths =  auxResultAllStatus.map(el => el.Deaths)
+    auxChartDataConfirmed =  auxResultAllStatus.map(el => el.Confirmed)
+    auxChartDataRecovered =  auxResultAllStatus.map(el => el.Recovered)
+    setPrintDeaths(auxChartDataDeaths[auxChartDataDeaths.length - 1])
+    setPrintConfirmed(auxChartDataConfirmed[auxChartDataConfirmed.length - 1])
+    setPrintRecovered(auxChartDataRecovered[auxChartDataRecovered.length - 1])
+
+    auxChartDataPrint = auxResultAllStatus.map(el => +el[
       ctxURLParamChartDesc[0].toUpperCase()+ctxURLParamChartDesc.substring(1) as keyof TResultAllStatus
     ])
-    auxChartAvg = [...auxChartData]
-    auxChartAvg.fill(auxChartData.reduce((a:number, b:number) => a + b, 0) / auxChartData.length)
+    auxChartDataPrintAvg = [...auxChartDataPrint]
+    auxChartDataPrintAvg.fill(auxChartDataPrint.reduce((a:number, b:number) => a + b, 0) / auxChartDataPrint.length)
     setDataChart([
       ['Data', infoChartDescList[ctxURLParamChartDesc as keyof TInfoChartDescList], 'Média'],
-      ...auxDateList.map((el, i) => [el, auxChartData[i], auxChartAvg[i]])
+      ...auxDateList.map((el, i) => [el, auxChartDataPrint[i], auxChartDataPrintAvg[i]])
     ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctxURLParamChartDesc])
 
   if(ctxByCountryAllStatus && ctxURLParamChartDesc && dataChart) {
     if(dataChart) {
-      auxRender = <div>
-        {chartDescList.map(el => <label key={uuidv4()}>
-            <input
-              type="radio"
-              name="chart"
-              checked={el === inputChartDesc ? true : false}
-              value={el}
-              onChange={(evt) => {
-                setInputChartDesc(evt.currentTarget.value)
-                router.push(`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/${evt.currentTarget.value}`)
-              }}
-            />
-            { infoChartDescList[el as keyof TInfoChartDescList] }
-          </label>
-        )}
-        <Chart
-          chartType="Line"
-          width="100%"
-          height="200px"
-          data={dataChart}
-          loader={<Loading />}
-        />
+      auxRender = <div className={ styles['box-chart'] }>
+        <div>
+          {chartDescList.map(el => <label key={uuidv4()}>
+              <input
+                type="radio"
+                name="chart"
+                checked={el === inputChartDesc ? true : false}
+                value={el}
+                onChange={(evt) => {
+                  setInputChartDesc(evt.currentTarget.value)
+                  router.push(`/country/${ctxURLParamSlug}/${ctxURLParamFrom}/${ctxURLParamTo}/${evt.currentTarget.value}`)
+                }}
+              />
+              { infoChartDescList[el as keyof TInfoChartDescList] }
+            </label>
+          )}
+        </div>
+        <div>
+          <Chart
+            chartType="Line"
+            width="100%"
+            height="100%"
+            data={dataChart}
+            options={{
+              colors: ["#592068", "#A788AF"],
+            }}
+            loader={<Loading />}
+          />
+        </div>
       </div>
     } else {
       auxRender = <ErrorDialog>

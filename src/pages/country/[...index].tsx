@@ -1,6 +1,9 @@
 import moment from "moment"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
+import { TbMapSearch } from "react-icons/tb"
+import { IoArrowBack } from "react-icons/io5"
+import Link from "next/link"
 // My Project
 import { apiServiceGetCountries, apiServiceGetByCountryAllStatus } from "../../client/service/apiService"
 import { ICountry as ICountryList } from "../../interface/countries"
@@ -12,6 +15,7 @@ import Loading from "../../components/Loading"
 import ErrorDialog from "../../components/ErrorDialog"
 import Card from "../../components/Card"
 import styles from "../../styles/CountryPage.module.sass"
+import WarningDialog from "../../components/WarningDialog"
 
 // General Numbers
 const PrintNumbers = ({
@@ -92,11 +96,21 @@ function handleURLParamsValidate(
 function handleApiClientByCountryAllStatus(
   slug: string, from: string, to: string,
   setByCountryAllStatus: Function,
-  setErrorCountryStatus: Function
+  setErrorCountryStatus: Function,
+  setErrorInconsistentData: Function
 ): void {
   apiServiceGetByCountryAllStatus(slug, from, to)
   .then(res => {
-    setByCountryAllStatus([...res])
+    try {
+      if(res.length > 0) {
+        setErrorInconsistentData(null)
+        setByCountryAllStatus([...res])
+      } else {
+        throw new Error("There are no records for this search");
+      }
+    } catch (error) {
+      if(error instanceof Error) setErrorInconsistentData(error)
+    }
   })
   .catch(e => setErrorCountryStatus(e))
 }
@@ -122,6 +136,7 @@ export default function Country() {
 
   // By Country All Status
   const [errorCountryStatus, setErrorCountryStatus] = useState<Error | null>(null)
+  const [errorInconsistentData, setErrorInconsistentData] = useState<Error | null>(null)
   useEffect(() => {
     if(ctxCountryList && router.query.index) {
       URLParams = handleURLParamsValidate(router.query.index, ctxCountryList, chartDescList)
@@ -133,14 +148,14 @@ export default function Country() {
         if(ctxByCountryAllStatus === null) {
           handleApiClientByCountryAllStatus(
             URLParams[0], URLParams[1], URLParams[2],
-            setCtxByCountryAllStatus, setErrorCountryStatus
+            setCtxByCountryAllStatus, setErrorCountryStatus, setErrorInconsistentData
           )
         }
         if(URLParams[0] !== ctxURLParamSlug || URLParams[1] !== ctxURLParamFrom || URLParams[2] !== ctxURLParamTo) {
           setCtxByCountryAllStatus(null)
           handleApiClientByCountryAllStatus(
             URLParams[0], URLParams[1], URLParams[2],
-            setCtxByCountryAllStatus, setErrorCountryStatus
+            setCtxByCountryAllStatus, setErrorCountryStatus, setErrorInconsistentData
           )
         }
       } else {
@@ -164,32 +179,71 @@ export default function Country() {
 
   // Render
   render = <Loading />
+  const [formSearchClose, setFormSearchClose] = useState(true)
+  const [printDeaths, setPrintDeaths] = useState<number>(0)
+  const [printConfirmed, setPrintConfirmed] = useState<number>(0)
+  const [printRecovered, setPrintRecovered] = useState<number>(0)
 
   if(errorCountryList || errorCountryStatus) {
     render = <ErrorDialog>
       <h4>Erro!</h4>
-      <p>Não foi possível conectar-se à base de dados, tente mais tarde.</p>
+      <p>Erro durante a conexão</p>
     </ErrorDialog>
+  }
+
+  if(errorInconsistentData) {
+    render = <WarningDialog>
+      <h4>Aviso!</h4>
+      <p>Não há registros para esta busca.</p>
+      <Link href={`/country/${PUB_SLUG}/${PUB_FROM}/${PUB_TO}/${PUB_CHART_DESC}`}>
+        <a>Clique para voltar!</a>
+      </Link>
+    </WarningDialog>
   }
 
   if(!errorCountryList && !errorCountryStatus && ctxCountryList && ctxByCountryAllStatus) {
     render = <section className={ styles['section'] }>
       <h1>Resumo {ctxByCountryAllStatus[ctxByCountryAllStatus.length - 1].Country}</h1>
-      <Card classAdd="shadow" cornerRad>
-        <h4>Escolha um país e um intervalo de datas</h4>
-        <SearchPart />
-      </Card>
-      <Card classAdd="shadow" cornerRad>
-        <h3>Números Totais</h3>
-        <h5>Dados de acordo com { moment(ctxByCountryAllStatus[ctxByCountryAllStatus.length - 1].Date).locale('pt-br').calendar().toLocaleLowerCase() }</h5>
-        <PrintNumbers
-          deaths={ctxByCountryAllStatus[ctxByCountryAllStatus.length - 1].Deaths}
-          confirmed={ctxByCountryAllStatus[ctxByCountryAllStatus.length - 1].Confirmed}
-          recovered={ctxByCountryAllStatus[ctxByCountryAllStatus.length - 1].Recovered}
-          labels={['Mortos', 'Confirmados', 'Recuperados']}
-        />
-      </Card>
-      <CountryChartLinePart chartDescList={ chartDescList } />
+      <div className={styles['panel'] }>
+        <div className={ formSearchClose ? styles['form-search-show'] : styles['form-search-hide'] }>
+          <Card classAdd="shadow" cornerRad>
+            <div onClick={ () => setFormSearchClose(false) } className={ `${styles['form-search-btn']}` }>
+              <input type="text" readOnly placeholder="Pesquise por país..."/>
+              <span>
+                <TbMapSearch />
+              </span>
+            </div>
+            <div className={ styles['form-search-dialog'] }>
+              <span onClick={ () => setFormSearchClose(true) } >
+                <IoArrowBack />
+              </span>
+              <h4>Escolha um país e um intervalo de datas</h4>
+              <SearchPart setFormSearchClose={ setFormSearchClose } />
+            </div>
+          </Card>
+        </div>
+        <div className={styles['chart-data'] }>
+          <Card classAdd="shadow" cornerRad>
+            <h3>Números Totais</h3>
+            <h5>Conforme { moment(ctxByCountryAllStatus[ctxByCountryAllStatus.length - 1].Date).locale('pt-br').calendar().toLocaleLowerCase() }</h5>
+            <PrintNumbers
+              deaths={printDeaths}
+              confirmed={printConfirmed}
+              recovered={printRecovered}
+              labels={['Mortos', 'Confirmados', 'Recuperados']}
+            />
+          </Card>
+          <Card classAdd="shadow overflow-x" cornerRad>
+            <h3>Curva diária da COVID-19</h3>
+            <CountryChartLinePart
+              chartDescList={ chartDescList }
+              setPrintDeaths={ setPrintDeaths }
+              setPrintConfirmed={ setPrintConfirmed }
+              setPrintRecovered={ setPrintRecovered }
+            />
+          </Card>
+        </div>
+      </div>
     </section>
   }
 
