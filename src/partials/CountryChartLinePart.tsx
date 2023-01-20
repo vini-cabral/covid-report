@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react"
 import { Chart } from "react-google-charts"
 import moment from "moment"
-import { v4 as uuidv4 } from "uuid"
 import { useRouter } from "next/router"
 // My Project
 import dataContext from "../context"
@@ -92,7 +91,7 @@ export default function CountryChartPart({
     if(dataChart) {
       auxRender = <div className={ styles['box-chart'] }>
         <div>
-          {chartDescList.map(el => <label key={uuidv4()}>
+          {chartDescList.map(el => <label key={ el }>
               <input
                 type="radio"
                 name="chart"
