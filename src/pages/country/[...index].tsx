@@ -1,3 +1,4 @@
+import Head from "next/head"
 import moment from "moment"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
@@ -247,5 +248,12 @@ export default function Country() {
     </section>
   }
 
-  return <>{ render }</>
+  return <>
+    <Head>
+      <title>Covid Report - Informações por país</title>
+      <meta name="description" content="Resumo por País da Covid-19" />
+      <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+    </Head>
+    { render }
+  </>
 }

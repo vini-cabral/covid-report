@@ -1,3 +1,4 @@
+import Head from "next/head"
 import { useContext, useEffect, useState } from "react"
 import moment from "moment"
 import "moment/locale/pt-br"
@@ -123,5 +124,12 @@ export default function GlobalSummary() {
     </section>
   }
 
-  return render
+  return <>
+    <Head>
+      <title>Covid Report - Página Incial</title>
+      <meta name="description" content="Resumo Global da Covid-19" />
+      <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+    </Head>
+    { render }
+  </>
 }
